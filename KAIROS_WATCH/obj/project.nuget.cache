@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "7/ScbGqolww=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\prade\\Desktop\\KAIROS_WATCH\\KAIROS_WATCH\\KAIROS_WATCH.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\prade\\.nuget\\packages\\system.diagnostics.eventlog\\9.0.9\\system.diagnostics.eventlog.9.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}
