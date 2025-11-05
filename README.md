@@ -1,77 +1,58 @@
-**KAIROS WATCH**
+🕒 KAIROS WATCH
+Windows Security Log Guardian — Real-Time Monitoring, Backup & Tamper Detection
+⚡ Overview
 
-Windows security monitoring tool that detects log tampering and automatically backs up security logs.
+Kairos Watch is a Windows security monitoring tool built with .NET 9.0, designed to detect log tampering and automatically back up critical security logs.
 
-**Overview**
+It continuously monitors Windows Security Event Logs in real time, ensuring that all crucial log data is preserved for forensic and audit purposes — even in cases of log clearing or service manipulation.
 
-Kairos Watch is a .NET 9.0 console app that monitors Windows Security Event Logs in real-time. It ensures logs are preserved for forensic purposes.
+🔍 Monitored Events
+Event ID	Description	Action
+1102	Security audit log cleared	🔴 Backup triggered & alert logged
+7036	Critical service start/stop	🟡 Informational log recorded
+🧠 Key Features
 
-**Monitored Events:**
+✅ Real-Time Monitoring — Watches Windows Security Logs continuously
+🕓 Automatic Backups — Creates timestamped .evtx backups upon detection
+🧩 Tamper Detection — Detects when logs are cleared (Event ID 1102)
+🛡️ Critical Service Tracking — Monitors key service start/stop events (Event ID 7036)
+📝 Persistent Alert Logging — All alerts saved to KairosWatch_Alerts.txt
+🎨 Color-Coded Output —
+   🔴 Critical Alerts
+   🟡 Informational Logs
 
-1102 — Security audit log cleared
-
-7036 — Critical service start/stop
-
-Action: Automatically backs up logs and logs alerts on detection.
-
-**Features**
-
-Real-time Windows Event Log monitoring
-
-Automatic timestamped log backups
-
-Tamper detection for cleared security logs
-
-Critical service monitoring
-
-Persistent alert logging (KairosWatch_Alerts.txt)
-
-Color-coded console output (red = critical, yellow = info)
-
-**Installation & Usage**
-
-Clone & build:
-
+⚙️ Installation & Usage
+1️⃣ Clone the Repository
 git clone <repo-url>
 cd KAIROS_WATCH
+
+2️⃣ Build the Project
 dotnet build --configuration Release
 
-
-Run as Administrator:
-
+3️⃣ Run as Administrator
 cd bin\Release\net9.0
 KAIROS_WATCH.exe
 
+4️⃣ Stop Anytime
 
-Stop with Ctrl+C.
+Press Ctrl + C to safely terminate monitoring.
 
-**Output:**
+🔐 Security Notes
 
-backups/ — timestamped .evtx log backups
+Requires Administrator Privileges
 
-KairosWatch_Alerts.txt — alert log
+Preserves full log metadata during backup
 
-**Technical Details**
+You can restrict permissions on the backups/ folder for integrity protection
 
-Platform: Windows 10/11 / Server
+Ideal for forensics, SOC monitoring, and incident response environments
 
-Architecture: Single-threaded, event-driven
-
-Monitoring: EventLogWatcher
-
-Backup: Windows wevtutil
-
-Error Handling: Robust exception handling
-
-**Security Notes**
-
-Requires admin privileges
-
-Preserves full log metadata in backups
-
-Backup folder can be permission-restricted
-
-**Example Output**
+🧾 Example Console Output
 [INFO] Monitoring Windows Security Logs...
 [ALERT] Event ID 1102 detected — Security log cleared!
 [INFO] Backup created: backups\Security_20251003_112045.evtx
+
+
+📜 License
+
+This project is licensed under the MIT License — free to use, modify, and distribute with attribution.
