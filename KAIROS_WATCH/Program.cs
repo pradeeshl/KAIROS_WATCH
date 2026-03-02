@@ -6,22 +6,16 @@ using System.Threading;
 
 class Program
 {
-    // Configuration of the project
-    private static readonly string BackupDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backups");
-    private static readonly string AlertFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "KairosWatch_Alerts.txt");
-    private static readonly int BackupTimeoutMs = 30_000; // 30s for wevtutil
-
+    private static readonly string BackupDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backups");    private static readonly string AlertFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "KairosWatch_Alerts.txt");
+    private static readonly int BackupTimeoutMs = 30_000;
     static void Main()
     {
         Console.WriteLine("KairosWatch — starting up...");
-
-        // Ensure backup folder exists
         Directory.CreateDirectory(BackupDir);
 
         TrySecureBackupFolder(BackupDir);
 
         #if WINDOWS
-                // Subscribe to Event ID 1102 (audit log cleared) and 7036 (service state changes)
                 string query = "*[System[(EventID=1102) or (EventID=7036)]]";
                 var eventsQuery = new EventLogQuery("Security", PathType.LogName, query);
         
@@ -29,9 +23,7 @@ class Program
                 {
                     watcher.EventRecordWritten += EventLogEventRead;
                     watcher.Enabled = true;
-        
                     Console.WriteLine("Monitoring Windows Event Logs (Security). Press Ctrl+C to exit.");
-                    // Keep app alive
                     var exitEvent = new ManualResetEvent(false);
                     Console.CancelKeyPress += (s, e) =>
                     {
@@ -56,25 +48,18 @@ class Program
                     LogToConsole($"Received null event record. Exception: {e.EventException?.Message}");
                     return;
                 }
-    
                 int id = e.EventRecord.Id;
                 string time = DateTime.UtcNow.ToString("o");
                 string source = e.EventRecord.ProviderName ?? "Unknown";
                 string message = TrySafeFormat(e.EventRecord);
-    
-                // Build an alert summary
                 string alert = $"[{time}] ALERT: EventID={id} Source={source} Message=\"{Shorten(message, 300)}\"";
-    
-                // If it's the tamper event (1102) or service stop, act
                 if (id == 1102)
                 {
                     WriteAlert(alert);
-                    // Backup logs immediately
                     BackupSecurityLog();
                 }
                 else if (id == 7036)
                 {
-                    // optional: detect service stopped states in message text
                     if (message?.IndexOf("stopped", StringComparison.OrdinalIgnoreCase) >= 0 ||
                         message?.IndexOf("stopping", StringComparison.OrdinalIgnoreCase) >= 0)
                     {
@@ -84,7 +69,6 @@ class Program
                 }
                 else
                 {
-                    // For other subscribed events, just log them
                     WriteAlert(alert);
                 }
             }
@@ -99,12 +83,9 @@ class Program
 
     private static void WriteAlert(string text)
     {
-        // Console (red)
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(text);
         Console.ResetColor();
-
-        // Append to alert file
         try
         {
             File.AppendAllText(AlertFile, text + Environment.NewLine);
@@ -121,7 +102,6 @@ class Program
         {
             string timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
             string outPath = Path.Combine(BackupDir, $"Security_{timestamp}.evtx");
-
             var psi = new ProcessStartInfo
             {
                 FileName = "wevtutil",
@@ -165,54 +145,19 @@ class Program
             LogToConsole($"Exception during backup: {ex.Message}");
         }
     }
-
-    private static void TrySecureBackupFolder(string folder)
+    private static void TrySecureBackupFolder(string path)
     {
-        // try
-        // {
-        //     // Grant full control to SYSTEM and Administrators, remove inheritance.
-        //     // This requires elevated privileges.
-        //     string args = $"\"{folder}\" /grant \"SYSTEM:(OI)(CI)F\" \"Administrators:(OI)(CI)F\" /inheritance:r";
-
-        //     var psi = new ProcessStartInfo
-        //     {
-        //         FileName = "icacls",
-        //         Arguments = args,
-        //         CreateNoWindow = true,
-        //         UseShellExecute = false,
-        //         RedirectStandardOutput = true,
-        //         RedirectStandardError = true
-        //     };
-
-        //     using (var proc = Process.Start(psi))
-        //     {
-        //         if (proc == null) return;
-        //         proc.WaitForExit();
-        //         if (proc.ExitCode != 0)
-        //         {
-        //             string err = proc.StandardError.ReadToEnd();
-        //             LogToConsole($"icacls returned {proc.ExitCode}: {Shorten(err, 300)}");
-        //         }
-        //         else
-        //         {
-        //             LogToConsole("Backup folder ACL updated (SYSTEM + Administrators).");
-        //         }
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     LogToConsole($"Could not secure backup folder: {ex.Message}");
-        // }
-        LogToConsole("Skipping ACL hardening (icacls disabled for safe run).");
+        if (Directory.Exists(path))
+        {
+            LogToConsole($"Backup folder ready: {path}");
+        }
     }
-
     private static void LogToConsole(string msg)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(msg);
         Console.ResetColor();
     }
-
         private static string TrySafeFormat(EventRecord rec)
         {
     #if WINDOWS
