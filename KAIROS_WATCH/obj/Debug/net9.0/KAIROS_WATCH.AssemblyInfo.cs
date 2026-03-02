@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KAIROS_WATCH")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1e6521bb5aa2a1919f6b830e95016403c4c41210")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3a11149c3d36ad8b68a0dd5cc90d0f1e052581a6")]
 [assembly: System.Reflection.AssemblyProductAttribute("KAIROS_WATCH")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KAIROS_WATCH")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
